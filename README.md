@@ -85,7 +85,7 @@ You command the Genesis units (blue). Wipe out the Rathos forces (red) before th
 **Three things that will kill you if you ignore them:**
 
 - **Counterattacks.** If your target survives and you're in its range, it hits back. Attacking with a fragile unit into something that lives is how you lose it.
-- **Type matching.** Weapons beat armor in a triangle (Blunt › Heavy, Slash › Medium, Pierce › Light), and elements run Fire › Ice › Wind › Earth › Lightning › Water › Fire. A good matchup is 1.25–1.5× damage; a bad one is roughly half.
+- **Type matching.** Weapons beat armor in a triangle (Blunt › Heavy, Slash › Medium, Pierce › Light), and elements run Fire › Ice › Wind › Earth › Lightning › Water › Fire. A good matchup deals 1.25–1.5× damage; a bad one costs you 20–50%.
 - **Getting surrounded.** Enemies gain accuracy and crit chance for each of their allies next to your unit — and the AI knows it. It presses when it outnumbers you locally and backs off when isolated.
 
 **Use your support.** Calla heals and buffs, items work from the global inventory, and abilities cost MP. You get one item per unit per turn and it doesn't consume the unit's action — so healing and attacking in the same turn is often the right play.
