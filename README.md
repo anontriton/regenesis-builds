@@ -119,3 +119,5 @@ Designed, programmed, and written by **Iverson Lai**. Built with [Godot Engine](
 ---
 
 <p align="center"><sub>© Iverson Lai. All rights reserved. Builds are provided for evaluation and play; the game's code and assets are not licensed for redistribution or reuse.</sub></p>
+
+<!-- simulated web edit -->
