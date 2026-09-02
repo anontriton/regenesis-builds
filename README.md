@@ -6,7 +6,6 @@
 
 <p align="center">
   <img alt="Engine: Godot 4.4" src="https://img.shields.io/badge/engine-Godot%204.4-478cbf?logo=godotengine&logoColor=white">
-  <img alt="Language: GDScript" src="https://img.shields.io/badge/language-GDScript-355570">
   <img alt="Platforms: Windows | macOS" src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-lightgrey">
   <img alt="Version: 0.0.29" src="https://img.shields.io/badge/build-0.0.29-informational">
 </p>
@@ -21,7 +20,7 @@
   <img src="docs/screenshot-battle.png" alt="A battle in Re: Genesis — Thomas is selected, with blue tiles showing his movement range and red tiles showing the enemy threat range layered on top." width="100%">
 </p>
 
-<p align="center"><sub>Selecting a unit projects its full threat envelope: blue for reachable tiles, red for everything an enemy can hit from where <em>they</em> can move.</sub></p>
+<p align="center"><sub>Selecting a unit shows its full threat envelope: blue for where it can move, red for everything an enemy can hit from where <em>they</em> can move.</sub></p>
 
 ---
 
@@ -31,131 +30,89 @@
 
 Two years into the Genesis Rebellion, the Rathos Empire has not broken. You play Thomas, one of the rebellion's commanders, sent downriver to the neutral settlement of Yore to beg for steel and grain before an Imperial legion arrives to take both. It does not go well.
 
-The build here is a **vertical slice**: a full playable chapter that runs the complete game loop — visual-novel dialogue, a scripted tactical battle with story triggers, post-battle resolution — on top of systems built to carry a much longer campaign.
+This build is a **vertical slice** — one complete chapter that runs the full game loop, on systems built to carry a longer campaign.
 
-## Download & play
+## Install
 
-Builds are published on the [**Releases page**](https://github.com/anontriton/regenesis-builds/releases). Grab the file for your platform, and see the notes below.
+Download the file for your platform from the [**Releases page**](https://github.com/anontriton/regenesis-builds/releases).
 
-| Platform | File | Notes |
-| --- | --- | --- |
-| Windows 10/11 | `ReGenesis Windows <version>.exe` | Run it directly. SmartScreen may warn — choose *More info → Run anyway*. |
-| macOS 11+ (Apple Silicon & Intel) | `ReGenesis MacOS <version>.dmg` | Universal binary, unsigned; see the unblock step below. |
+The game needs no installer and runs on modest hardware — it uses Godot's OpenGL compatibility renderer, so integrated graphics are fine. It opens at 1920×1080 fullscreen. **Use a mouse if you can.**
 
-**System requirements** are light — the game targets Godot's OpenGL compatibility renderer, so integrated graphics are fine. It runs at 1920×1080 fullscreen. A mouse is strongly recommended.
+> [!IMPORTANT]
+> These builds aren't code-signed, because I don't have a paid Apple or Microsoft developer certificate. Both operating systems will warn you the app is unrecognized. The steps below are how you tell your OS to run it anyway — you'll only need to do this once.
 
-<details>
-<summary><strong>macOS: "Re: Genesis is damaged and can't be opened"</strong></summary>
+### Windows 10/11
 
-<br>
+1. Your browser may block the download itself. Choose **Keep** → **Keep anyway**.
+2. Run `ReGenesis Windows <version>.exe`. Windows shows a blue *"Windows protected your PC"* box.
+3. Click **More info**, then **Run anyway**.
 
-These builds aren't signed with an Apple Developer certificate, so macOS quarantines them on download. To clear the quarantine flag, drag the app to `/Applications`, then run:
+If there's no "More info" link, right-click the `.exe` → **Properties** → check **Unblock** at the bottom of the *General* tab → **OK**, then run it again.
 
-```bash
-xattr -dr com.apple.quarantine "/Applications/Re: Genesis.app"
-```
+### macOS 11+ (Apple Silicon & Intel)
 
-Then open it normally. (If you'd rather not run that, right-click the app → *Open* → *Open* also works on some macOS versions.)
+1. Open the `.dmg` and drag **Re: Genesis** to your Applications folder.
+2. Launching it normally gives you *"Re: Genesis is damaged and can't be opened"* — this is the quarantine flag, not actual damage.
+3. Open Terminal and run:
 
-</details>
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Re: Genesis.app"
+   ```
 
-## Controls
+4. Open the app normally.
 
-The game is mouse-first, with keyboard shortcuts and partial controller support.
+If you'd rather not use Terminal: try right-click the app → **Open** → **Open**. On newer macOS versions, launch it once, then go to **System Settings → Privacy & Security**, scroll to the message about Re: Genesis being blocked, and click **Open Anyway**.
+
+## How to play
+
+You command the Genesis units (blue). Wipe out the Rathos forces (red) before they wipe out you. Lose a unit marked essential and the battle ends immediately.
+
+**The core loop:** click a unit → click where to go → click who to hit. A unit can **move and attack in the same turn**, so the tile you pick matters as much as the target. When all your units have acted, the enemy takes its turn.
 
 | Input | Action |
 | --- | --- |
-| **Left click** | Select a unit / confirm a destination or target |
+| **Left click** | Select a unit, then confirm a destination or target |
 | **Left click again** | Open the selected unit's action menu |
 | **Right click + drag** | Pan the camera |
 | **Mouse wheel** | Zoom in / out |
 | **1 – 4** | Command · Ability · Item · Wait |
-| **Enter** | Confirm a combat preview · advance dialogue |
-| **Esc** | Cancel out of targeting, or open the battle menu |
-| **Tab** | Muster Roll — the full party roster and status screens |
+| **Enter** | Confirm an attack · advance dialogue |
+| **Esc** | Cancel targeting, or open the battle menu |
+| **Tab** | Muster Roll — party roster and unit stats |
 
-A unit can **move and attack in the same action**. Click an empty tile in range to move; click an enemy in range to attack; click an enemy that's only reachable by moving first, and you'll get a combat forecast before committing.
+**Reading the board.** Selecting a unit paints blue tiles where it can move and red tiles the enemy can reach and attack. Standing in red means you can be hit this turn. Before any attack you get a forecast — damage, hit chance, crit chance, who strikes first, and a warning if the blow is lethal — so you can back out before committing.
 
-## What's in the game
+**Three things that will kill you if you ignore them:**
 
-**Tactics layer**
-- Grid movement with terrain-cost pathfinding and per-unit terrain affinities — a mage crossing sand isn't paying the same price a knight is
-- A combined threat overlay that computes what enemies can hit *after moving*, not just from where they stand
-- Combat forecasts before every attack: damage, hit chance, crit chance, initiative order, and lethal warnings
-- Counterattacks, glancing blows against high-defense targets, and positional bonuses for surrounding a target
+- **Counterattacks.** If your target survives and you're in its range, it hits back. Attacking with a fragile unit into something that lives is how you lose it.
+- **Type matching.** Weapons beat armor in a triangle (Blunt › Heavy, Slash › Medium, Pierce › Light), and elements run Fire › Ice › Wind › Earth › Lightning › Water › Fire. A good matchup is 1.25–1.5× damage; a bad one is roughly half.
+- **Getting surrounded.** Enemies gain accuracy and crit chance for each of their allies next to your unit — and the AI knows it. It presses when it outnumbers you locally and backs off when isolated.
 
-**Combat math**
-- A physical weapon triangle (Blunt / Slash / Pierce) layered against three armor classes
-- A six-element cycle — Fire › Ice › Wind › Earth › Lightning › Water › Fire — at 1.5× effective, 0.5× resisted
-- Physical/special attack and defense split, with damage variance, luck-scaled crit, and speed-scaled accuracy
+**Use your support.** Calla heals and buffs, items work from the global inventory, and abilities cost MP. You get one item per unit per turn and it doesn't consume the unit's action — so healing and attacking in the same turn is often the right play.
 
-**Enemy AI**
-- Utility-scored decision making that weighs expected damage, target health, accumulated aggro, positional safety, and proximity to allies
-- Situational nerve: enemies press the attack when they outnumber you locally, hesitate when isolated and hurt, and healers triage allies with emergency priority below 15% HP
-- A small randomized term so the same board doesn't replay identically
+## Core systems
 
-**Campaign & content**
-- 7 playable protagonists, 7 enemy archetypes, 20 abilities, 12 weapons — all defined in JSON and hot-swappable without touching engine code
-- Visual-novel dialogue scenes with portraits, backgrounds, and history scrollback
-- A level-scripting event system: trigger popups, dialogue, camera moves, reinforcements, and objective changes on turn counts, HP thresholds, unit deaths, or position entry
-- Six mission objective types, persistent party progression between battles, and a shared inventory convoy
+- **Tactical movement** — terrain costs vary by unit, so a mage crossing sand pays a different price than a knight. Threat overlays account for where enemies can move *to*, not just where they stand.
+- **Combat math** — physical/special attack and defense split, damage variance, luck-scaled criticals, speed-scaled accuracy, counterattacks, and a glancing-damage floor so heavily armored units still take chip damage.
+- **Enemy AI** — scores every possible action by expected damage, target health, accumulated aggro, positional safety, and ally proximity, with a small random term so the same map doesn't replay identically. Enemy healers triage, prioritizing allies in critical condition.
+- **Party progression** — 7 protagonists with distinct roles, 20 abilities, and 12 weapons. Units keep their levels, HP, and equipment between battles.
+- **Story delivery** — visual-novel dialogue with portraits between battles, plus a scripting system that fires popups, reinforcements, camera moves, and objective changes mid-fight.
 
-## Under the hood
+## Status & what's next
 
-For anyone curious about the engineering rather than the game — roughly **15,000 lines of GDScript across ~48 files**, written solo over the course of the capstone.
+Version **0.0.29** is the capstone presentation build: one chapter, complete and playable, built to prove the systems underneath it.
 
-The architecture splits into two orchestration layers:
-
-- **A macro layer** (`GameRoot`) owns the long-lived objects — the data registry, session state, and campaign progression — and swaps the active scene through a state machine: `TITLE → DIALOGUE → BATTLE → POST_BATTLE → ENDING`. Scenes receive their dependencies by injection rather than reaching for globals, which keeps any scene runnable standalone in the editor.
-- **A battle layer** (`BattleScene`) owns the short-lived tactical managers — turn flow, objectives, combat resolution, AI, and level events — and coordinates them entirely through Godot signals rather than direct calls between siblings.
-
-Two design decisions did most of the heavy lifting:
-
-**A serialized UI queue.** Tactics games generate a lot of things that all want the screen at once — a turn-change banner, a combat animation, a scripted story popup, a unit dying, a camera pan to the reinforcements that just arrived. Rather than letting those race, the battle state machine has a dedicated `SHOWING_UI` state ("cinema mode") that drains a queue in order while blocking input, then returns to whatever state it interrupted. Death checks and objective evaluation are deliberately deferred until the board settles, so a popup can't cut a combat animation in half.
-
-**Data-driven everything.** Campaign structure, level layouts, unit archetypes, abilities, weapons, items, and dialogue all live in JSON and plain-text files parsed at load. Adding a chapter, rebalancing a weapon, or scripting a new mid-battle story beat is a data change, not a code change — which is what made solo iteration on balance feasible at all.
-
-The project also ships an **automated in-engine test suite** (~20 test groups) that runs against a live battle scene in debug builds, covering the damage pipeline's bounds and invariants, type effectiveness, ability targeting rules, turn-state flags, aggro decay, buff expiry, and UI-sequencing integration cases like "does the queue actually drain and hand control back to the player."
-
-## Where it stands
-
-Version **0.0.29** is the capstone presentation build — a complete, playable vertical slice rather than a finished campaign. One chapter, built to prove the systems underneath it.
-
-Current limitations, stated plainly:
-
-- The campaign is one chapter; the content pipeline supports many more
-- Saving isn't implemented yet — the menu option is deliberately disabled rather than hidden
-- Three of the six objective types (`PROTECT_UNIT`, `REACH_LOCATION`, `CUSTOM`) format their objective text correctly but their win-checks are still stubs
-- Combat previews are best-effort — displayed crit chance omits a few context-dependent bonuses that the real resolution does apply
-- Buff effects stack where they should refresh
-- The post-battle screen reports the result but not per-unit battle stats
-
-## Roadmap
-
-**Next up — finishing the loop**
-- **Save/load.** The snapshot system that powers mid-battle retries already serializes party state; save files are largely a matter of persisting that to disk and restoring campaign position on load.
-- **The remaining objective types.** Escort and seize missions are the two that most change how a map plays, and they're the ones still stubbed.
-- **Combat animation.** There's a reserved animation window in the battle UI sized for Fire Emblem-style attack cutaways; right now it holds the lighter sprite-slide feedback that shipped instead.
-- **Post-battle results.** Per-unit damage dealt, kills, and level-ups on the victory screen.
-
-**Then — content**
-- **More chapters.** The campaign format takes arbitrary chapter counts today; the bottleneck is authored content — maps, story text, and encounter balance — not engine work.
-- **A cutscene system.** The event scripter already has a `trigger_cutscene` hook wired and waiting behind a stub.
-- **A deeper item and inventory layer.** Two consumables ship today; the inventory convoy and effect system are built to carry equipment swaps and a wider consumable set.
-
-**Longer term**
-- Multi-faction battles — teams became named strings rather than hardcoded 0/1 early on specifically to allow third parties on the field
-- Permadeath as a difficulty option, and the support-conversation systems the genre is known for
+Not in yet — **saving** (the menu option is disabled rather than hidden), **more chapters** (the content pipeline handles them; authored maps and story are the bottleneck), **full attack animations** (the battle UI reserves a window for them), and **escort/seize objectives**. Known rough edges: buff effects stack where they should refresh, and the combat forecast omits a couple of situational crit bonuses that the real attack applies.
 
 ## Source code
 
-This repository hosts **playable builds only**. The game's source lives in a private repository — I'm happy to walk through the code, the architecture, or any specific system with employers and collaborators; just reach out.
+This repository hosts playable builds only — the source lives in a private repository. It's roughly 15,000 lines of GDScript: a two-layer architecture splitting campaign orchestration from battle logic, communicating over signals, with all content defined in JSON rather than code, and an in-engine test suite covering the combat math and UI sequencing.
+
+Happy to walk employers or collaborators through any of it — just reach out.
 
 ## Credits
 
-Designed, programmed, and written by **Iverson Lai**.
-
-Built with [Godot Engine](https://godotengine.org/) 4.4.
+Designed, programmed, and written by **Iverson Lai**. Built with [Godot Engine](https://godotengine.org/) 4.4.
 
 ---
 
