@@ -17,10 +17,10 @@
 ---
 
 <p align="center">
-  <img src="docs/screenshot-battle.png" alt="A battle in Re: Genesis — Thomas is selected, with blue tiles showing his movement range and red tiles showing the enemy threat range layered on top." width="100%">
+  <img src="docs/screenshot-battle.png" alt="A battle in Re: Genesis — Thomas is selected, with blue tiles showing where he can move and red tiles showing everything he could attack after moving." width="100%">
 </p>
 
-<p align="center"><sub>Selecting a unit shows its full threat envelope: blue for where it can move, red for everything an enemy can hit from where <em>they</em> can move.</sub></p>
+<p align="center"><sub>Selecting a unit shows its whole reach at once: blue for where it can move, red for every tile it could strike after moving there.</sub></p>
 
 ---
 
@@ -65,7 +65,7 @@ If you'd rather not use Terminal: try right-click the app → **Open** → **Ope
 
 ## How to play
 
-You command the Genesis units (blue). Wipe out the Rathos forces (red) before they wipe out you. Lose a unit marked essential and the battle ends immediately.
+You command the Genesis rebels. Wipe out the Rathos forces before they wipe out you. Lose a unit marked essential and the battle ends immediately.
 
 **The core loop:** click a unit → click where to go → click who to hit. A unit can **move and attack in the same turn**, so the tile you pick matters as much as the target. When all your units have acted, the enemy takes its turn.
 
@@ -80,7 +80,9 @@ You command the Genesis units (blue). Wipe out the Rathos forces (red) before th
 | **Esc** | Cancel targeting, or open the battle menu |
 | **Tab** | Muster Roll — party roster and unit stats |
 
-**Reading the board.** Selecting a unit paints blue tiles where it can move and red tiles the enemy can reach and attack. Standing in red means you can be hit this turn. Before any attack you get a forecast — damage, hit chance, crit chance, who strikes first, and a warning if the blow is lethal — so you can back out before committing.
+**Reading the board.** Selecting a unit paints its reach in two colors: **blue** is where it can move, **red** is everything it could attack — tiles it can hit from wherever it's able to move first. So an enemy standing on red is one you can reach and attack this turn, even if it looks far away. Once a unit has moved, the overlay narrows to its plain attack range from where it now stands.
+
+Before any attack you get a forecast — damage, hit chance, crit chance, who strikes first, and a warning if the blow is lethal — so you can back out before committing.
 
 **Three things that will kill you if you ignore them:**
 
@@ -92,7 +94,7 @@ You command the Genesis units (blue). Wipe out the Rathos forces (red) before th
 
 ## Core systems
 
-- **Tactical movement** — terrain costs vary by unit, so a mage crossing sand pays a different price than a knight. Threat overlays account for where enemies can move *to*, not just where they stand.
+- **Tactical movement** — terrain costs vary by unit, so a mage crossing sand pays a different price than a knight. Range overlays fold movement and attack into one picture, showing everything a unit can hit *after* moving rather than only from where it stands.
 - **Combat math** — physical/special attack and defense split, damage variance, luck-scaled criticals, speed-scaled accuracy, counterattacks, and a glancing-damage floor so heavily armored units still take chip damage.
 - **Enemy AI** — scores every possible action by expected damage, target health, accumulated aggro, positional safety, and ally proximity, with a small random term so the same map doesn't replay identically. Enemy healers triage, prioritizing allies in critical condition.
 - **Party progression** — 7 protagonists with distinct roles, 20 abilities, and 12 weapons. Units keep their levels, HP, and equipment between battles.
