@@ -31,7 +31,7 @@
 
 Two years into the Genesis Rebellion, the Rathos Empire has not broken. You play Thomas, one of the rebellion's commanders, sent downriver to the neutral settlement of Yore to beg for steel and grain before an Imperial legion arrives to take both. It does not go well.
 
-The build here is a **vertical slice**: a full playable chapter that runs the complete game loop — visual-novel dialogue, a scripted tactical battle with story triggers, post-battle resolution — on top of systems built to carry a longer campaign.
+The build here is a **vertical slice**: a full playable chapter that runs the complete game loop — visual-novel dialogue, a scripted tactical battle with story triggers, post-battle resolution — on top of systems built to carry a much longer campaign.
 
 ## Download & play
 
@@ -40,7 +40,7 @@ Builds are published on the [**Releases page**](https://github.com/anontriton/re
 | Platform | File | Notes |
 | --- | --- | --- |
 | Windows 10/11 | `ReGenesis Windows <version>.exe` | Run it directly. SmartScreen may warn — choose *More info → Run anyway*. |
-| macOS (Apple Silicon & Intel) | `ReGenesis MacOS <version>.dmg` | Unsigned build; see the unblock step below. |
+| macOS 11+ (Apple Silicon & Intel) | `ReGenesis MacOS <version>.dmg` | Universal binary, unsigned; see the unblock step below. |
 
 **System requirements** are light — the game targets Godot's OpenGL compatibility renderer, so integrated graphics are fine. It runs at 1920×1080 fullscreen. A mouse is strongly recommended.
 
@@ -117,15 +117,35 @@ Two design decisions did most of the heavy lifting:
 
 The project also ships an **automated in-engine test suite** (~20 test groups) that runs against a live battle scene in debug builds, covering the damage pipeline's bounds and invariants, type effectiveness, ability targeting rules, turn-state flags, aggro decay, buff expiry, and UI-sequencing integration cases like "does the queue actually drain and hand control back to the player."
 
-## Status & roadmap
+## Where it stands
 
-Version **0.0.29** is the capstone presentation build. It's a complete, playable vertical slice rather than a finished campaign — one chapter, built to prove the systems.
+Version **0.0.29** is the capstone presentation build — a complete, playable vertical slice rather than a finished campaign. One chapter, built to prove the systems underneath it.
 
-Known gaps, stated plainly:
+Current limitations, stated plainly:
+
 - The campaign is one chapter; the content pipeline supports many more
-- Three of the six objective types format correctly but their win-checks are still stubs
-- Saving is not implemented (the menu option is deliberately disabled)
-- Combat previews are best-effort — displayed crit chance omits a few context bonuses the real resolution applies
+- Saving isn't implemented yet — the menu option is deliberately disabled rather than hidden
+- Three of the six objective types (`PROTECT_UNIT`, `REACH_LOCATION`, `CUSTOM`) format their objective text correctly but their win-checks are still stubs
+- Combat previews are best-effort — displayed crit chance omits a few context-dependent bonuses that the real resolution does apply
+- Buff effects stack where they should refresh
+- The post-battle screen reports the result but not per-unit battle stats
+
+## Roadmap
+
+**Next up — finishing the loop**
+- **Save/load.** The snapshot system that powers mid-battle retries already serializes party state; save files are largely a matter of persisting that to disk and restoring campaign position on load.
+- **The remaining objective types.** Escort and seize missions are the two that most change how a map plays, and they're the ones still stubbed.
+- **Combat animation.** There's a reserved animation window in the battle UI sized for Fire Emblem-style attack cutaways; right now it holds the lighter sprite-slide feedback that shipped instead.
+- **Post-battle results.** Per-unit damage dealt, kills, and level-ups on the victory screen.
+
+**Then — content**
+- **More chapters.** The campaign format takes arbitrary chapter counts today; the bottleneck is authored content — maps, story text, and encounter balance — not engine work.
+- **A cutscene system.** The event scripter already has a `trigger_cutscene` hook wired and waiting behind a stub.
+- **A deeper item and inventory layer.** Two consumables ship today; the inventory convoy and effect system are built to carry equipment swaps and a wider consumable set.
+
+**Longer term**
+- Multi-faction battles — teams became named strings rather than hardcoded 0/1 early on specifically to allow third parties on the field
+- Permadeath as a difficulty option, and the support-conversation systems the genre is known for
 
 ## Source code
 
