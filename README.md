@@ -112,9 +112,82 @@ This repository hosts playable builds only — the source lives in a private rep
 
 Happy to walk employers or collaborators through any of it — just reach out.
 
+### Structure
+
+- `core/` - Game shell, state management, campaign logic, and session data
+- `battle/` - Main gameplay scenes (Grid, Units, TurnManager, UI, AI, animations)
+  - `battle/grid/` - Grid and map management
+  - `battle/turn/` - Turn flow, objectives, combat math, and AI
+  - `battle/ui/` - Menus, HUD, previews, and notifications
+  - `battle/unit/` - Unit scene + unit logic (stats, leveling, constants)
+  - `battle/test/` - Testing and debugging utilities (battle_test.gd, battle_debug.gd)
+  - `battle/utils/` - Utilities (action_handler.gd, battle_input.gd, camera_controller.gd, etc.)
+- `dialogue/` - Visual novel-style dialogue scenes
+- `post_battle/` - Post-battle result screens
+- `ending/` - Campaign completion screen
+- `title/` - Main title screen
+- `assets/` - Game assets (portraits, backgrounds, sprites, etc.)
+  - `art/` - Character portraits and scene backgrounds
+  - `resources/` - Godot resource files (.tres)
+- `shared/`
+  - `data/` - JSON data (campaign, level definitions, story text)
+  - `units/` - Unit archetypes, abilities, weapons, items, protagonists, villains
+  - `scripts/` - Shared logic (HealEffect, DamageEffect, MPRestoreEffect, BuffEffect, DebuffEffect)
+
+### Battle System
+
+**Turn-Based Combat:**
+
+- Units can move then attack in same turn if target within range
+- Automatic turn completion when all player units finish actions
+- TurnManager checks whether all player units have **completed** their turns (a unit is “done” if it has acted, or if it has moved and has no enemies in attack range); one of the key call sites is when the player deselects a unit.
+- Enemy decision making based on utility scoring
+- Win condition: eliminate all enemy units
+- Loss condition: all player units eliminated or essential unit dies
+
+**Core Battle Features:**
+
+- Grid-based movement with pathfinding (`Grid.flood_reachable()`)
+- Unit selection and action
+- Attack range calculations and combat resolution
+- Utility AI with weighted parameters and aggro scoring
+- Real-time win/loss condition checking
+- Battle result storage and display
+- Combined threat range overlay (movement + attack range)
+- Fire Emblem-style move-then-attack in single action
+- Visual combat animations with sprite-based feedback
+- Combat preview system before attacks
+
+**Enemy AI Utility Scoring:**
+
+- Scores possible actions using weighted parameters:
+  - Damage potential (weight 0.40): Expected damage + critical hit + lethal bonuses
+  - HP targeting (weight 0.25): Prioritizes low-health player units
+  - Aggro system (weight 0.35): Targets high-threat units based on damage dealt
+  - Proximity (weight 0.05): Prefers actions requiring less movement
+  - Safety (weight 0.30): Avoids counter-attack range and dangerous positions
+  - Ally coordination (weight 0.15): Prefers staying near team average position
+  - Small noise (±0.05) prevents predictable patterns
+  - Note: these are weights (not normalized percentages), so they do not need to sum to 1.0
+- **Action Timing**: 1.0 second delay between enemy actions, 0.5 second delay between movement and attack
+- **Healing Behavior**:
+  - Heals allies at 60% HP threshold (HEAL_THRESHOLD)
+  - Emergency healing at 15% HP (CRITICAL_HEAL_THRESHOLD) with 4x score multiplier
+  - Note: while `HEAL_BONUS_MULTIPLIER = 2.0` exists, the current implementation primarily boosts **critical HP** healing (4x) and adds extra priority-unit bias, rather than applying a blanket 2x multiplier for all “below threshold” heals.
+
+**Enhanced AI Safety Logic:**
+
+- **Bravery in Numbers**: Allies nearby cancel out threat intimidation - each ally negates one threat's fear factor
+- **Swarm Confidence**: When enemies outnumber player units locally, they recover safety score and ignore some counter-attack risk
+- **Healthy Confidence**: Units at high health (>70% HP) have fear penalty reduced by 50%
+- **Proactive Healing**: AI healers heal allies at 60% HP threshold (increased from 30%)
+- AI now intelligently coordinates group attacks when supported by allies
+
 ## Credits
 
 Designed, programmed, and written by **Iverson Lai**. Built with [Godot Engine](https://godotengine.org/) 4.4.
+Story artwork drawn by **Iverson Lai** and **Candy Lin**.
+Character sprites were made with remixed and recolored Fire Emblem GBA assets.
 
 ---
 
