@@ -263,7 +263,7 @@ static func get_cells_in_range(start_cell: Vector2i, range_value: int) -> Array[
 
 Designed, programmed, and written by **Iverson Lai**. Built with [Godot Engine](https://godotengine.org/) 4.4.
 Story artwork drawn by **Iverson Lai** and **Candy Lin**.
-Character sprites were made with remixed and recolored Fire Emblem GBA assets.
+Character sprites were made with remixed and recolored Fire Emblem GBA assets (from Reddit user u/TheFlyingMinotaur).
 
 Third-party assets:
 - Title screen backgrounds: "Backgrounds" by Nidhoggn ([OpenGameArt](https://opengameart.org/node/79322), CC0)
