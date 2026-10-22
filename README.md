@@ -134,6 +134,60 @@ This repository hosts playable builds only — the source lives in a private rep
 
 Happy to walk employers or collaborators through any of it — just reach out.
 
+### Code sample: movement and attack range
+
+Movement is a cost-aware flood fill over the 4-way grid. Each step adds the terrain cost *for that unit* (sand is cheap for one class and expensive for another), impassable tiles and enemy units block, and a tile's cost is lowered whenever a cheaper route to it is found. The result is every tile the unit can reach, mapped to what it costs to get there. This is what paints the blue tiles.
+
+```gdscript
+# battle/grid/grid.gd
+func flood_reachable(start: Vector2i, max_cost: int, is_occupied: Callable, terrain_costs: Dictionary = {}) -> Dictionary:
+	var open: Array[Vector2i] = [start]
+	var cost: Dictionary = { start: 0 }
+
+	while open.size() > 0:
+		var cur: Vector2i = open.pop_front()
+		var cur_cost: int = cost[cur]
+
+		for n in neighbors(cur):
+			# check if terrain is passable
+			var terrain_cost = terrain_costs.get(n, 999)
+			if terrain_cost >= 999:
+				continue
+
+			# check if obstacle blocks movement
+			if obstacle and obstacle.get_cell_source_id(n) != -1:
+				continue
+
+			# check if another unit occupies this cell (allow starting position)
+			if n != start and is_occupied.call(n):
+				continue
+
+			# calculate movement cost to reach this neighbor
+			var step: int = cur_cost + terrain_cost
+			if step > max_cost:
+				continue
+
+			# update cost if this is a new cell or we found a cheaper path
+			if not cost.has(n) or step < int(cost[n]):
+				cost[n] = step
+				open.push_back(n)
+
+	return cost
+```
+
+Attack and ability ranges are diamonds, measured with Manhattan distance (`|dx| + |dy|`). The red overlay runs this from every tile in the movement result, so it shows everything a unit could hit after moving.
+
+```gdscript
+# battle/utils/range_calculator.gd
+static func get_cells_in_range(start_cell: Vector2i, range_value: int) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	for dx in range(-range_value, range_value + 1):
+		for dy in range(-range_value, range_value + 1):
+			if abs(dx) + abs(dy) <= range_value and (dx != 0 or dy != 0):
+				cells.append(start_cell + Vector2i(dx, dy))
+	return cells
+```
+
 ### Structure
 
 - `core/` - Game shell, state management, campaign logic, and session data
