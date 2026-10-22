@@ -7,7 +7,7 @@
 <p align="center">
   <img alt="Engine: Godot 4.4" src="https://img.shields.io/badge/engine-Godot%204.4-478cbf?logo=godotengine&logoColor=white">
   <img alt="Platforms: Windows | macOS" src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-lightgrey">
-  <img alt="Version: 0.0.29" src="https://img.shields.io/badge/build-0.0.29-informational">
+  <img alt="Version: 0.0.34" src="https://img.shields.io/badge/build-0.0.34-informational">
 </p>
 
 <p align="center">
@@ -17,10 +17,31 @@
 ---
 
 <p align="center">
-  <img src="docs/screenshot-battle.png" alt="A battle in Re: Genesis — Thomas is selected, with blue tiles showing where he can move and red tiles showing everything he could attack after moving." width="100%">
+  <img src="media/06_movement_and_attack_range.jpg" alt="A battle in Re: Genesis — Thomas is selected, with blue tiles showing where he can move and red tiles showing everything he could attack after moving." width="100%">
 </p>
 
 <p align="center"><sub>Selecting a unit shows its whole reach at once: blue for where it can move, red for every tile it could strike after moving there.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="media/11_combat_preview.jpg" alt="The combat forecast: each side's HP before and after, damage, hit and crit chance."></td>
+    <td width="50%"><img src="media/14_critical_hit.jpg" alt="A critical hit in the combat window."></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Every attack is forecast before you commit.</sub></td>
+    <td align="center"><sub>Crits land hard — so do the enemy's.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="media/03_story_dialogue.jpg" alt="Visual-novel story scene: Lisa speaks while Commander Gallagher listens."></td>
+    <td width="50%"><img src="media/08_your_move_banner.jpg" alt="The Your Move banner sweeping across the battlefield at the start of the player phase."></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Story told between battles, visual-novel style.</sub></td>
+    <td align="center"><sub>Player and enemy phases alternate, Fire Emblem style.</sub></td>
+  </tr>
+</table>
+
+More screenshots are in [`media/`](media/).
 
 ---
 
@@ -51,12 +72,12 @@ If there's no "More info" link, right-click the `.exe` → **Properties** → ch
 
 ### macOS 11+ (Apple Silicon & Intel)
 
-1. Open the `.dmg` and drag **Re: Genesis** to your Applications folder.
+1. Open the `.dmg` and drag **Re- Genesis** to your Applications folder. (macOS doesn't allow a colon in app names, so it shows up with a hyphen.)
 2. Launching it normally gives you *"Re: Genesis is damaged and can't be opened"* — this is the quarantine flag, not actual damage.
 3. Open Terminal and run:
 
    ```bash
-   xattr -dr com.apple.quarantine "/Applications/Re: Genesis.app"
+   xattr -dr com.apple.quarantine "/Applications/Re- Genesis.app"
    ```
 
 4. Open the app normally.
@@ -65,7 +86,7 @@ If you'd rather not use Terminal: try right-click the app → **Open** → **Ope
 
 ## How to play
 
-You command the Genesis rebels. Wipe out the Rathos forces before they wipe out you. Lose a unit marked essential and the battle ends immediately.
+You command the Genesis rebels. Each battle has its own objective, shown in the Muster Roll (**Tab**). In this chapter, you hold out against an ambush on two fronts until reinforcements arrive, then take down the general who sprang it. Lose a unit marked essential and the battle ends immediately.
 
 **The core loop:** click a unit → click where to go → click who to hit. A unit can **move and attack in the same turn**, so the tile you pick matters as much as the target. When all your units have acted, the enemy takes its turn.
 
@@ -82,7 +103,7 @@ You command the Genesis rebels. Wipe out the Rathos forces before they wipe out 
 
 **Reading the board.** Selecting a unit paints its reach in two colors: **blue** is where it can move, **red** is everything it could attack — tiles it can hit from wherever it's able to move first. So an enemy standing on red is one you can reach and attack this turn, even if it looks far away. Once a unit has moved, the overlay narrows to its plain attack range from where it now stands.
 
-Before any attack you get a forecast — damage, hit chance, crit chance, who strikes first, and a warning if the blow is lethal — so you can back out before committing.
+Before any attack you get a forecast: both units' HP before and after the exchange, damage, hit and crit chance, a **KO!** warning if a blow is lethal, and whether the target can counter at all. You can back out before committing.
 
 **Three things that will kill you if you ignore them:**
 
@@ -99,16 +120,17 @@ Before any attack you get a forecast — damage, hit chance, crit chance, who st
 - **Enemy AI** — scores every possible action by expected damage, target health, accumulated aggro, positional safety, and ally proximity, with a small random term so the same map doesn't replay identically. Enemy healers triage, prioritizing allies in critical condition.
 - **Party progression** — 7 protagonists with distinct roles, 20 abilities, and 12 weapons. Units keep their levels, HP, and equipment between battles.
 - **Story delivery** — visual-novel dialogue with portraits between battles, plus a scripting system that fires popups, reinforcements, camera moves, and objective changes mid-fight.
+- **Presentation** — units walk their path tile by tile, HP bars on the map, finished units grey out, hit and spell effects, phase banners, scene fades, and typewriter dialogue where the speaking character is highlighted.
 
 ## Status & what's next
 
-Version **0.0.29** is the capstone presentation build: one chapter, complete and playable, built to prove the systems underneath it.
+Version **0.0.34** is a polish pass on the capstone presentation build (0.0.29): the same complete chapter, with a new UI theme, combat feedback, a more accurate combat forecast, and a round of bug fixes.
 
-Not in yet — **saving** (the menu option is disabled rather than hidden), **more chapters** (the content pipeline handles them; authored maps and story are the bottleneck), **full attack animations** (the battle UI reserves a window for them), and **escort/seize objectives**. Known rough edges: buff effects stack where they should refresh, and the combat forecast omits a couple of situational crit bonuses that the real attack applies.
+Not in yet — **saving** (the menu option is disabled rather than hidden), **more chapters** (the content pipeline handles them; authored maps and story are the bottleneck), **full attack animations** (the battle UI reserves a window for them), and **escort/seize objectives**. Known rough edges: buff effects stack where they should refresh, and there's no sound yet.
 
 ## Source code
 
-This repository hosts playable builds only — the source lives in a private repository. It's roughly 15,000 lines of GDScript: a two-layer architecture splitting campaign orchestration from battle logic, communicating over signals, with all content defined in JSON rather than code, and an in-engine test suite covering the combat math and UI sequencing.
+This repository hosts playable builds only — the source lives in a private repository. It's roughly 16,000 lines of GDScript: a two-layer architecture splitting campaign orchestration from battle logic, communicating over signals, with all content defined in JSON rather than code, and an in-engine test suite covering the combat math and UI sequencing.
 
 Happy to walk employers or collaborators through any of it — just reach out.
 
@@ -142,7 +164,7 @@ Happy to walk employers or collaborators through any of it — just reach out.
 - Automatic turn completion when all player units finish actions
 - TurnManager checks whether all player units have **completed** their turns (a unit is “done” if it has acted, or if it has moved and has no enemies in attack range); one of the key call sites is when the player deselects a unit.
 - Enemy decision making based on utility scoring
-- Win condition: eliminate all enemy units
+- Win condition: set per level (eliminate all enemies, survive a number of turns, or eliminate a specific unit), and can change mid-battle
 - Loss condition: all player units eliminated or essential unit dies
 
 **Core Battle Features:**
@@ -188,6 +210,11 @@ Happy to walk employers or collaborators through any of it — just reach out.
 Designed, programmed, and written by **Iverson Lai**. Built with [Godot Engine](https://godotengine.org/) 4.4.
 Story artwork drawn by **Iverson Lai** and **Candy Lin**.
 Character sprites were made with remixed and recolored Fire Emblem GBA assets.
+
+Third-party assets:
+- Title screen backgrounds: "Backgrounds" by Nidhoggn ([OpenGameArt](https://opengameart.org/node/79322), CC0)
+- UI panels and buttons: "UI pack: RPG extension" by [Kenney](https://www.kenney.nl) (CC0)
+- Fonts: [Alegreya](https://github.com/huertatipografica/Alegreya) by Huerta Tipográfica and [Cinzel](https://github.com/NDISCOVER/Cinzel) by Natanael Gama (SIL Open Font License 1.1)
 
 ---
 
